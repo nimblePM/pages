@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>3D Model Viewer</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #0b0d12;
+        font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+        color: #f4f4f6;
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .viewer-shell {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        width: 100%;
+      }
+
+      header {
+        padding: 24px 32px 8px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+        margin: 0 0 8px;
+      }
+
+      p {
+        margin: 0;
+        color: #b3b8c4;
+      }
+
+      .status {
+        padding: 10px 32px 0;
+        font-size: 0.95rem;
+        color: #b3b8c4;
+      }
+
+      .status strong {
+        color: #f4f4f6;
+      }
+
+      model-viewer {
+        width: 100%;
+        height: 100%;
+        background: #11141b;
+      }
+
+      footer {
+        padding: 16px 32px 24px;
+        font-size: 0.9rem;
+        color: #9aa1ad;
+      }
+
+      code {
+        background: #1b2230;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="viewer-shell">
+      <header>
+        <h1>3D Model Viewer</h1>
+        <p>Drag to orbit, scroll to zoom, and right click to pan.</p>
+      </header>
+
+      <div class="status" id="status">
+        Loading <strong>model.glb</strong>…
+      </div>
+
+      <model-viewer
+        id="viewer"
+        data-default-src="model.glb"
+        alt="3D model"
+        camera-controls
+        autoplay
+        shadow-intensity="1"
+        exposure="1"
+        environment-image="neutral"
+        loading="eager"
+        reveal="auto"
+      ></model-viewer>
+
+      <footer>
+        Place your model in the repo root as <code>model.glb</code> or pass a file name with
+        <code>?model=your-file.glb</code>.
+      </footer>
+    </div>
+
+    <script>
+      const viewer = document.getElementById("viewer");
+      const status = document.getElementById("status");
+      const params = new URLSearchParams(window.location.search);
+      const requestedModel = params.get("model");
+      const defaultModel = viewer.dataset.defaultSrc;
+      const modelSrc = requestedModel || defaultModel;
+
+      viewer.src = modelSrc;
+      status.innerHTML = `Loading <strong>${modelSrc}</strong>…`;
+
+      viewer.addEventListener("error", () => {
+        status.innerHTML =
+          "Unable to load the model. Confirm the file name and path, then refresh.";
+      });
+
+      viewer.addEventListener("load", () => {
+        status.textContent = "Model loaded.";
+      });
+    </script>
+  </body>
+</html>
